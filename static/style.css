@@ -12,6 +12,7 @@
 	display: inline-block;
 	width: 35px;
 	height: 35px;
+	background-size: cover;
 }
 
 .hidden-square {
@@ -20,5 +21,9 @@
 	border-left: 4px solid white;
 	border-right: 4px solid #7B7B7B;
 	border-bottom: 4px solid #7B7B7B;
-	background-size: cover;
+}
+
+.revealed-square {
+	background-color: #BDBDBD;
+	border: 1px solid #7B7B7B;
 }
