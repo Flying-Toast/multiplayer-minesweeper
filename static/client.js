@@ -12,6 +12,16 @@ const OutgoingMessage = {
 	}
 };
 
+function eltDisplayRevealedStyle(elt) {
+	elt.classList.remove("hidden-square");
+	elt.classList.add("revealed-square");
+}
+
+function eltDisplayHiddenStyle(elt) {
+	elt.classList.remove("revealed-square");
+	elt.classList.add("hidden-square");
+}
+
 class Square {
 	constructor(x, y) {
 		this.x = x;
@@ -22,12 +32,37 @@ class Square {
 		elt.addEventListener("click", function() {
 			ws.send(OutgoingMessage.Reveal(x, y));
 		});
+		elt.addEventListener("mousedown", function() {
+			let lastTarget = elt;
+			let wasRevealed = elt.classList.contains("revealed-square");
+			eltDisplayRevealedStyle(elt);
+			let mousemoveHandler = function(e) {
+				if (!wasRevealed && lastTarget.classList.contains("square")) {
+					eltDisplayHiddenStyle(lastTarget);
+				}
+				lastTarget = e.target;
+				wasRevealed = e.target.classList.contains("revealed-square");
+				if (e.target.classList.contains("square")) {
+					eltDisplayRevealedStyle(e.target);
+				}
+			};
+			addEventListener("mousemove", mousemoveHandler);
+			addEventListener("mouseup", function(e) {
+				removeEventListener("mousemove", mousemoveHandler);
+				if (e.target.classList.contains("square")) {
+					e.target.click();
+				}
+			});
+		});
 		this.elt = elt;
 	}
 
 	displayRevealedStyle() {
-		this.elt.classList.remove("hidden-square");
-		this.elt.classList.add("revealed-square");
+		eltDisplayRevealedStyle(this.elt);
+	}
+
+	displayHiddenStyle() {
+		eltDisplayHiddenStyle(this.elt);
 	}
 
 	// `setIcon(Icon.flag)` (displays a flag)
