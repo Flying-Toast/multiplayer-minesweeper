@@ -1,4 +1,5 @@
 use rand::{thread_rng, seq::SliceRandom};
+use std::collections::HashSet;
 
 #[derive(Debug)]
 pub struct Square {
@@ -31,6 +32,7 @@ pub struct Minefield {
     squares: Vec<Vec<Square>>,
     width: usize,
     height: usize,
+    is_first_move: bool,
 }
 
 impl Minefield {
@@ -66,6 +68,7 @@ impl Minefield {
             width,
             height,
             squares,
+            is_first_move: true,
         })
     }
 
@@ -116,6 +119,43 @@ impl Minefield {
     pub fn recursive_square_reveal(&mut self, x: usize, y: usize) -> Option<Vec<(usize, usize, SquareContents)>> {
         //TODO: prevent possible DOS by stack overflow if client makes huge field with few mines
         // set a limit on field size to also prevent DOS by allocating tons of memory
+
+        // remove mines on and surrounding the game's first revealed square to prevent loss on first move
+        if self.is_first_move {
+            self.is_first_move = false;
+            let mut mines_to_move = Vec::new();
+            let mut invalid_move_targets = HashSet::new();
+            invalid_move_targets.insert((x, y));
+            if self.get_square(x, y)?.is_mine {
+                mines_to_move.push((x, y));
+            }
+            for neighbor in self.square_neighbors(x, y) {
+                if neighbor.2 {
+                    mines_to_move.push((neighbor.0, neighbor.1));
+                }
+                invalid_move_targets.insert((neighbor.0, neighbor.1));
+            }
+
+            let mut move_targets: Vec<_> = self.squares
+                .iter()
+                .flatten()
+                .filter(|sq| !sq.is_mine)
+                .filter(|sq| !invalid_move_targets.contains(&(sq.x, sq.y)))
+                .map(|sq| (sq.x, sq.y))
+                .collect();
+            move_targets.shuffle(&mut thread_rng());
+
+            for (mine_x, mine_y) in mines_to_move {
+                if let Some((move_to_x, move_to_y)) = move_targets.pop() {
+                    self.get_square_mut(move_to_x, move_to_y).unwrap().is_mine = true;
+                    self.get_square_mut(mine_x, mine_y).unwrap().is_mine = false;
+                } else {
+                    // minefield is too dense to guarantee safe first move
+                    break;
+                }
+            }
+        }
+
         let square = self.get_square_mut(x, y)?;
         if square.revealed {
             return None;
