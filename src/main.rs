@@ -1,11 +1,14 @@
 mod game;
 mod multiplayer;
 
-use simple_websockets::Event;
+use simple_websockets::{Event, Message};
 use multiplayer::{RoomManager, Client};
 
+const PORT: u16 = 12345;
+
 fn main() {
-    let hub = simple_websockets::launch(12345).expect("Failed to start websocket server");
+    let hub = simple_websockets::launch(PORT).expect("Failed to start websocket server");
+    println!("Listening on port {}", PORT);
     let mut rooms = RoomManager::new();
 
     loop {
@@ -18,6 +21,13 @@ fn main() {
                 rooms.remove_client(client_id);
             },
             Event::Message(client_id, message) => {
+                match message {
+                    Message::Text(s) => {
+                    },
+                    Message::Binary(_) => {
+                        println!("Ignoring binary message from client {}", client_id);
+                    },
+                }
             },
         }
     }

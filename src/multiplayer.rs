@@ -1,9 +1,25 @@
 use std::collections::HashMap;
-use simple_websockets::Responder;
+use simple_websockets::{Responder, Message};
 use crate::game::{Minefield};
 
 type RoomId = u32;
 type ClientId = u64;
+
+enum OutgoingMessage {
+    /// (width, height)
+    NewGame(usize, usize),
+}
+
+impl OutgoingMessage {
+    // encodes to json
+    fn encode(&self) -> String {
+        match self {
+            Self::NewGame(width, height) => {
+                format!(r#"{{"t":"newgame","width":{},"height":{}}}"#, width, height)
+            },
+        }
+    }
+}
 
 pub struct Client {
     responder: Responder,
@@ -33,8 +49,11 @@ impl GameRoom {
     }
 
     fn add_client(&mut self, client: Client) {
-        self.clients.insert(client.id, client);
+        client.responder.send(Message::Text(
+            OutgoingMessage::NewGame(self.field.width(), self.field.height()).encode()
+        ));
         //TODO: broadcast new client to room (if other clients are in room)
+        self.clients.insert(client.id, client);
     }
 
     fn remove_client(&mut self, client_id: ClientId) -> Option<Client> {

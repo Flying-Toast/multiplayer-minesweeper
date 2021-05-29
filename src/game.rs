@@ -59,4 +59,12 @@ impl Minefield {
     pub fn default_field() -> Self {
         Self::new(30, 16, 99).unwrap()
     }
+
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
 }

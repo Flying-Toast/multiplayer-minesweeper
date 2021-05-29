@@ -45,6 +45,22 @@ class Minefield {
 
 function main() {
 	let boardElt = document.querySelector("#board");
-	let field = new Minefield(boardElt, 30, 16);
+	let ws = new WebSocket(`ws://${location.hostname}:12345`);
+	let field;
+
+	ws.addEventListener("message", function(m) {
+		const message = JSON.parse(m.data);
+		switch (message.t) {
+			case "newgame":
+				field = new Minefield(boardElt, message.width, message.height);
+				break;
+			default:
+				console.log("Unhandled message:", message);
+		}
+	});
+
+	ws.addEventListener("close", function() {
+		console.log("Websocket closed");
+	})
 }
 addEventListener("load", main);
