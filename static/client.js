@@ -65,6 +65,11 @@ class Square {
 		eltDisplayHiddenStyle(this.elt);
 	}
 
+	displayBoomedStyle() {
+		this.elt.classList.remove("hidden-square");
+		this.elt.classList.add("boom-mine");
+	}
+
 	// `setIcon(Icon.flag)` (displays a flag)
 	// `setIcon(Icon.num[1])` (displays a "1")
 	setIcon(iconName) {
@@ -117,6 +122,7 @@ function main() {
 				} else if (numContent == 0) {
 					square.displayRevealedStyle();
 				} else if (message.content == "!") {
+					square.displayBoomedStyle();
 					//TODO: implement
 					console.log("LOSE!");
 				}

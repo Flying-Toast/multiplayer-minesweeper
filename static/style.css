@@ -27,3 +27,9 @@
 	background-color: #BDBDBD;
 	border: 1px solid #7B7B7B;
 }
+
+.boom-mine {
+	background-color: red;
+	background-image: url("/mine.svg");
+	border: 1px solid #7B7B7B;
+}
