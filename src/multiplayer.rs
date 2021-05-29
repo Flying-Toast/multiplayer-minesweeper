@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use simple_websockets::{Responder, Message};
-use crate::game::{Minefield};
+use crate::game::{Minefield, SquareContents};
 use crate::messages::{OutgoingMessage, IncomingMessage};
 
 type RoomId = u32;
@@ -25,6 +25,7 @@ impl Client {
 struct GameRoom {
     clients: HashMap<ClientId, Client>,
     field: Minefield,
+    is_game_over: bool,
 }
 
 impl GameRoom {
@@ -32,6 +33,7 @@ impl GameRoom {
         Self {
             clients: HashMap::new(),
             field,
+            is_game_over: false,
         }
     }
 
@@ -60,8 +62,15 @@ impl GameRoom {
 
     /// Reveals square to all clients
     fn reveal_square(&mut self, x: usize, y: usize) {
+        if self.is_game_over {
+            return;
+        }
+
         if let Some(squares) = self.field.recursive_square_reveal(x, y) {
             for (x, y, contents) in squares {
+                if let SquareContents::MineBoom = contents {
+                    self.is_game_over = true;
+                }
                 self.broadcast_message(
                     OutgoingMessage::Reveal(x, y, contents)
                 );

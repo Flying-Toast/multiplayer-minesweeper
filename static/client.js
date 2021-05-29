@@ -1,4 +1,5 @@
 let ws = null;
+let gameOver = false;
 
 const Icon = {
 	// num[0] is meaningless, zero-index is just used as padding so that num[1] is icon "1"
@@ -33,6 +34,10 @@ class Square {
 			ws.send(OutgoingMessage.Reveal(x, y));
 		});
 		elt.addEventListener("mousedown", function() {
+			if (gameOver) {
+				return;
+			}
+
 			let lastTarget = elt;
 			let wasRevealed = elt.classList.contains("revealed-square");
 			eltDisplayRevealedStyle(elt);
@@ -123,8 +128,7 @@ function main() {
 					square.displayRevealedStyle();
 				} else if (message.content == "!") {
 					square.displayBoomedStyle();
-					//TODO: implement
-					console.log("LOSE!");
+					gameOver = true;
 				}
 				break;
 			default:
