@@ -1,16 +1,28 @@
+let ws = null;
+
 const Icon = {
 	// num[0] is meaningless, zero-index is just used as padding so that num[1] is icon "1"
 	num: Array.from(Array(9).keys()).map(String),
 	flag: "flag",
 };
 
+const OutgoingMessage = {
+	Reveal: function(x, y) {
+		return `reveal\n${x}\n${y}`;
+	}
+};
+
 class Square {
 	constructor(x, y) {
 		this.x = x;
 		this.y = y;
-		this.elt = document.createElement("span");
-		this.elt.classList.add("square");
-		this.elt.classList.add("hidden-square");
+		let elt = document.createElement("span");
+		elt.classList.add("square");
+		elt.classList.add("hidden-square");
+		elt.addEventListener("click", function() {
+			ws.send(OutgoingMessage.Reveal(x, y));
+		});
+		this.elt = elt;
 	}
 
 	// `setIcon(Icon.flag)` (displays a flag)
@@ -45,8 +57,8 @@ class Minefield {
 
 function main() {
 	let boardElt = document.querySelector("#board");
-	let ws = new WebSocket(`ws://${location.hostname}:12345`);
 	let field;
+	ws = new WebSocket(`ws://${location.hostname}:12345`);
 
 	ws.addEventListener("message", function(m) {
 		const message = JSON.parse(m.data);
@@ -61,6 +73,6 @@ function main() {
 
 	ws.addEventListener("close", function() {
 		console.log("Websocket closed");
-	})
+	});
 }
 addEventListener("load", main);

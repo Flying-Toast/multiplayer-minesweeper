@@ -1,8 +1,10 @@
 mod game;
 mod multiplayer;
+mod messages;
 
 use simple_websockets::{Event, Message};
 use multiplayer::{RoomManager, Client};
+use messages::{IncomingMessage};
 
 const PORT: u16 = 12345;
 
@@ -23,6 +25,11 @@ fn main() {
             Event::Message(client_id, message) => {
                 match message {
                     Message::Text(s) => {
+                        if let Some(msg) = IncomingMessage::parse(&s) {
+                            println!("Got message: {:?}", msg);
+                        } else {
+                            println!("Couldn't parse message from client {}:\n== start ==\n{}\n== end ==", client_id, s);
+                        }
                     },
                     Message::Binary(_) => {
                         println!("Ignoring binary message from client {}", client_id);

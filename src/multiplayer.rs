@@ -1,26 +1,12 @@
 use std::collections::HashMap;
 use simple_websockets::{Responder, Message};
 use crate::game::{Minefield};
+use crate::messages::{OutgoingMessage};
 
 type RoomId = u32;
 type ClientId = u64;
 
-enum OutgoingMessage {
-    /// (width, height)
-    NewGame(usize, usize),
-}
-
-impl OutgoingMessage {
-    // encodes to json
-    fn encode(&self) -> String {
-        match self {
-            Self::NewGame(width, height) => {
-                format!(r#"{{"t":"newgame","width":{},"height":{}}}"#, width, height)
-            },
-        }
-    }
-}
-
+#[derive(Debug)]
 pub struct Client {
     responder: Responder,
     id: ClientId,
@@ -35,6 +21,7 @@ impl Client {
     }
 }
 
+#[derive(Debug)]
 struct GameRoom {
     clients: HashMap<ClientId, Client>,
     field: Minefield,
@@ -66,6 +53,7 @@ impl GameRoom {
     }
 }
 
+#[derive(Debug)]
 pub struct RoomManager {
     rooms: HashMap<RoomId, GameRoom>,
     next_room_id: RoomId,
