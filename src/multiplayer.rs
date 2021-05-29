@@ -61,9 +61,9 @@ impl GameRoom {
     /// Reveals square to all clients
     fn reveal_square(&self, x: usize, y: usize) {
         if let Some(squares) = self.field.recursive_square_reveal(x, y) {
-            for (square, contents) in squares {
+            for (x, y, contents) in squares {
                 self.broadcast_message(
-                    OutgoingMessage::Reveal(square.x(), square.y(), contents)
+                    OutgoingMessage::Reveal(x, y, contents)
                 );
             }
         } else {

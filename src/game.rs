@@ -11,14 +11,6 @@ impl Square {
     fn new(is_mine: bool, x: usize, y: usize) -> Self {
         Self { is_mine, x, y, }
     }
-
-    pub fn x(&self) -> usize {
-        self.x
-    }
-
-    pub fn y(&self) -> usize {
-        self.y
-    }
 }
 
 #[derive(Debug)]
@@ -104,18 +96,19 @@ impl Minefield {
     }
 
     /// Returns `None` if invalid coords
-    pub fn recursive_square_reveal(&self, x: usize, y: usize) -> Option<Vec<(&Square, SquareContents)>> {
+    pub fn recursive_square_reveal(&self, x: usize, y: usize) -> Option<Vec<(usize, usize, SquareContents)>> {
         //TODO: prevent possible DOS by stack overflow if client makes huge field with few mines
         //TODO: recurse
         let square = self.get_square(x, y)?;
         if square.is_mine {
             Some(
-                vec![(square, SquareContents::MineBoom)]
+                vec![(x, y, SquareContents::MineBoom)]
             )
         } else {
             Some(vec![
                 (
-                    square,
+                    x,
+                    y,
                     SquareContents::NumMines(self.square_neighbors(x, y).iter().filter(|sq| sq.is_mine).count() as u8),
                 )
 
