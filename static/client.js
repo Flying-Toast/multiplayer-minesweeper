@@ -20,7 +20,7 @@ class Square {
 	}
 }
 
-class MineField {
+class Minefield {
 	constructor(boardElement, width, height) {
 		boardElement.innerHTML = "";
 		this.boardElement = boardElement;
@@ -45,6 +45,6 @@ class MineField {
 
 function main() {
 	let boardElt = document.querySelector("#board");
-	let field = new MineField(boardElt, 30, 16);
+	let field = new Minefield(boardElt, 30, 16);
 }
 addEventListener("load", main);

@@ -308,6 +308,7 @@ dependencies = [
 name = "multiplayer-minesweeper"
 version = "0.1.0"
 dependencies = [
+ "rand",
  "simple-websockets",
 ]
 
@@ -530,7 +531,7 @@ dependencies = [
 [[package]]
 name = "simple-websockets"
 version = "0.1.1"
-source = "git+https://github.com/Flying-Toast/simple-websockets#26e097b4b877631196c6bf45ad510482ec9bf1a9"
+source = "git+https://github.com/Flying-Toast/simple-websockets#e2d2f83d7f26a53687a908149019e6a105fa6656"
 dependencies = [
  "flume",
  "futures-util",
