@@ -59,19 +59,17 @@ impl GameRoom {
     }
 
     /// Reveals square to all clients
-    fn reveal_square(&self, x: usize, y: usize) {
+    fn reveal_square(&mut self, x: usize, y: usize) {
         if let Some(squares) = self.field.recursive_square_reveal(x, y) {
             for (x, y, contents) in squares {
                 self.broadcast_message(
                     OutgoingMessage::Reveal(x, y, contents)
                 );
             }
-        } else {
-            println!("Bad client sent invalid square coords");
         }
     }
 
-    fn handle_message(&self, client_id: ClientId, message: IncomingMessage) {
+    fn handle_message(&mut self, client_id: ClientId, message: IncomingMessage) {
         match message {
             IncomingMessage::Reveal(x, y) => self.reveal_square(x, y),
         }
