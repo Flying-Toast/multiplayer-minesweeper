@@ -96,6 +96,7 @@ class Minefield {
 }
 
 function main() {
+	addEventListener("dragstart", e => e.preventDefault());
 	let boardElt = document.querySelector("#board");
 	let field;
 	ws = new WebSocket(`ws://${location.hostname}:12345`);
