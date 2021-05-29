@@ -1,0 +1,24 @@
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+#board {
+	line-height: 0;
+	display: inline-block;
+	white-space: nowrap;
+}
+
+.square {
+	display: inline-block;
+	width: 35px;
+	height: 35px;
+}
+
+.hidden-square {
+	background-color: #BDBDBD;
+	border-top: 4px solid white;
+	border-left: 4px solid white;
+	border-right: 4px solid #7B7B7B;
+	border-bottom: 4px solid #7B7B7B;
+	background-size: cover;
+}
