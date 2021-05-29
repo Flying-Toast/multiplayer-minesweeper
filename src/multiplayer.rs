@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use simple_websockets::{Responder, Message};
 use crate::game::{Minefield};
-use crate::messages::{OutgoingMessage};
+use crate::messages::{OutgoingMessage, IncomingMessage};
 
 type RoomId = u32;
 type ClientId = u64;
@@ -51,6 +51,31 @@ impl GameRoom {
     fn is_empty(&self) -> bool {
         self.clients.is_empty()
     }
+
+    fn broadcast_message(&self, message: OutgoingMessage) {
+        for client in self.clients.values() {
+            client.responder.send(Message::Text(message.encode()));
+        }
+    }
+
+    /// Reveals square to all clients
+    fn reveal_square(&self, x: usize, y: usize) {
+        if let Some(squares) = self.field.recursive_square_reveal(x, y) {
+            for (square, contents) in squares {
+                self.broadcast_message(
+                    OutgoingMessage::Reveal(square.x(), square.y(), contents)
+                );
+            }
+        } else {
+            println!("Bad client sent invalid square coords");
+        }
+    }
+
+    fn handle_message(&self, client_id: ClientId, message: IncomingMessage) {
+        match message {
+            IncomingMessage::Reveal(x, y) => self.reveal_square(x, y),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -96,5 +121,11 @@ impl RoomManager {
         } else {
             None
         }
+    }
+
+    pub fn handle_message(&mut self, client_id: ClientId, message: IncomingMessage) {
+        let client_roomid = *self.client_map.get(&client_id).expect("Client is not in a room");
+        let client_room = self.rooms.get_mut(&client_roomid).expect("Invalid RoomId in client_map");
+        client_room.handle_message(client_id, message);
     }
 }

@@ -26,7 +26,7 @@ fn main() {
                 match message {
                     Message::Text(s) => {
                         if let Some(msg) = IncomingMessage::parse(&s) {
-                            println!("Got message: {:?}", msg);
+                            rooms.handle_message(client_id, msg);
                         } else {
                             println!("Couldn't parse message from client {}:\n== start ==\n{}\n== end ==", client_id, s);
                         }

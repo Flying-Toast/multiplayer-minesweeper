@@ -25,6 +25,11 @@ class Square {
 		this.elt = elt;
 	}
 
+	displayRevealedStyle() {
+		this.elt.classList.remove("hidden-square");
+		this.elt.classList.add("revealed-square");
+	}
+
 	// `setIcon(Icon.flag)` (displays a flag)
 	// `setIcon(Icon.num[1])` (displays a "1")
 	setIcon(iconName) {
@@ -65,6 +70,20 @@ function main() {
 		switch (message.t) {
 			case "newgame":
 				field = new Minefield(boardElt, message.width, message.height);
+				break;
+			case "reveal":
+				const numContent = parseInt(message.content);
+				let square = field.getSquare(message.x, message.y);
+
+				if (!isNaN(numContent) && numContent > 0 && numContent < 9) {
+					square.displayRevealedStyle();
+					square.setIcon(Icon.num[numContent]);
+				} else if (numContent == 0) {
+					square.displayRevealedStyle();
+				} else if (message.content == "!") {
+					//TODO: implement
+					console.log("LOSE!");
+				}
 				break;
 			default:
 				console.log("Unhandled message:", message);

@@ -1,7 +1,7 @@
 use rand::{thread_rng, seq::SliceRandom};
 
 #[derive(Debug)]
-struct Square {
+pub struct Square {
     is_mine: bool,
     x: usize,
     y: usize,
@@ -11,6 +11,21 @@ impl Square {
     fn new(is_mine: bool, x: usize, y: usize) -> Self {
         Self { is_mine, x, y, }
     }
+
+    pub fn x(&self) -> usize {
+        self.x
+    }
+
+    pub fn y(&self) -> usize {
+        self.y
+    }
+}
+
+#[derive(Debug)]
+pub enum SquareContents {
+    NumMines(u8),
+    /// revealed square was a mine. Boom!
+    MineBoom,
 }
 
 #[derive(Debug)]
@@ -66,5 +81,45 @@ impl Minefield {
 
     pub fn height(&self) -> usize {
         self.height
+    }
+
+    /// Returns `None` if invalid coords
+    pub fn get_square(&self, x: usize, y: usize) -> Option<&Square> {
+        return self.squares.get(y)?.get(x)
+    }
+
+    fn square_neighbors(&self, x: usize, y: usize) -> Vec<&Square> {
+        let neighbor_positions = vec![
+            self.get_square(x - 1, y - 1), self.get_square(x, y - 1), self.get_square(x + 1, y - 1),
+            self.get_square(x - 1, y),                                self.get_square(x + 1, y),
+            self.get_square(x - 1, y + 1), self.get_square(x, y + 1), self.get_square(x + 1, y + 1),
+        ];
+        let mut neighbors = Vec::with_capacity(8);
+        for neighbor in neighbor_positions {
+            if let Some(square) = neighbor {
+                neighbors.push(square);
+            }
+        }
+        neighbors
+    }
+
+    /// Returns `None` if invalid coords
+    pub fn recursive_square_reveal(&self, x: usize, y: usize) -> Option<Vec<(&Square, SquareContents)>> {
+        //TODO: prevent possible DOS by stack overflow if client makes huge field with few mines
+        //TODO: recurse
+        let square = self.get_square(x, y)?;
+        if square.is_mine {
+            Some(
+                vec![(square, SquareContents::MineBoom)]
+            )
+        } else {
+            Some(vec![
+                (
+                    square,
+                    SquareContents::NumMines(self.square_neighbors(x, y).iter().filter(|sq| sq.is_mine).count() as u8),
+                )
+
+            ])
+        }
     }
 }
