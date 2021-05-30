@@ -1,4 +1,5 @@
 use crate::game::SquareContents;
+use crate::multiplayer::RoomId;
 
 impl SquareContents {
     fn encode(&self) -> &'static str {
@@ -28,6 +29,8 @@ pub enum OutgoingMessage {
     NewGame(usize, usize),
     /// Server is revealing square (x, y)
     Reveal(usize, usize, SquareContents),
+    /// Tells the client their room id
+    RoomCode(RoomId),
 }
 
 impl OutgoingMessage {
@@ -40,6 +43,9 @@ impl OutgoingMessage {
             Self::Reveal(x, y, contents) => {
                 format!(r#"{{"t":"reveal","x":{},"y":{},"content":"{}"}}"#, x, y, contents.encode())
             },
+            Self::RoomCode(roomid) => {
+                format!(r#"{{"t":"room","id":"{}"}}"#, roomid)
+            },
         }
     }
 }
@@ -48,6 +54,7 @@ impl OutgoingMessage {
 pub enum IncomingMessage {
     /// Client wants to reveal square (x, y)
     Reveal(usize, usize),
+    JoinRoom(RoomId),
 }
 
 impl IncomingMessage {
@@ -59,6 +66,11 @@ impl IncomingMessage {
                 let y: usize = lines.next()?.parse().ok()?;
 
                 Some(Self::Reveal(x, y))
+            },
+            "join" => {
+                let room_id: RoomId = lines.next()?.parse().ok()?;
+
+                Some(Self::JoinRoom(room_id))
             },
             _ => None,
         }

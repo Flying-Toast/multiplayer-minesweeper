@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Collaborative Multiplayer Minesweeper</title>
+		<title>Multiplayer Minesweeper</title>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="/style.css">
 	</head>
 
 	<body>
+		<div>You are in room <span id="your-room-code"></span></div>
+		<input id="room-code-input" type="text" placeholder="enter a room number">
+		<button id="room-code-submit">Go</button>
+		<br>
 		<div id="board"></div>
 
 		<script src="/client.js"></script>

@@ -10,7 +10,10 @@ const Icon = {
 const OutgoingMessage = {
 	Reveal: function(x, y) {
 		return `reveal\n${x}\n${y}`;
-	}
+	},
+	JoinRoom: function(id) {
+		return `join\n${id}`;
+	},
 };
 
 function eltDisplayRevealedStyle(elt) {
@@ -152,8 +155,15 @@ class Minefield {
 
 function main() {
 	addEventListener("dragstart", e => e.preventDefault());
+	let roomCodeDisplay = document.querySelector("#your-room-code");
+	let roomCodeInput = document.querySelector("#room-code-input");
+	let roomCodeSubmit = document.querySelector("#room-code-submit");
+	roomCodeSubmit.addEventListener("click", function() {
+		ws.send(OutgoingMessage.JoinRoom(roomCodeInput.value));
+	});
 	let boardElt = document.querySelector("#board");
 	let field;
+	let roomId = null;
 	ws = new WebSocket(`ws://${location.hostname}:12345`);
 
 	ws.addEventListener("message", function(m) {
@@ -176,6 +186,10 @@ function main() {
 					square.displayBoomedStyle();
 					gameOver = true;
 				}
+				break;
+			case "room":
+				roomId = message.id;
+				roomCodeDisplay.innerText = roomId;
 				break;
 			default:
 				console.log("Unhandled message:", message);

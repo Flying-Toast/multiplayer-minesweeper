@@ -3,8 +3,8 @@ use simple_websockets::{Responder, Message};
 use crate::game::{Minefield, SquareContents};
 use crate::messages::{OutgoingMessage, IncomingMessage};
 
-type RoomId = u32;
-type ClientId = u64;
+pub type RoomId = u32;
+pub type ClientId = u64;
 
 #[derive(Debug)]
 pub struct Client {
@@ -26,20 +26,25 @@ struct GameRoom {
     clients: HashMap<ClientId, Client>,
     field: Minefield,
     is_game_over: bool,
+    room_id: RoomId,
 }
 
 impl GameRoom {
-    fn new(field: Minefield) -> Self {
+    fn new(field: Minefield, room_id: RoomId) -> Self {
         Self {
             clients: HashMap::new(),
             field,
             is_game_over: false,
+            room_id,
         }
     }
 
     fn add_client(&mut self, client: Client) {
         client.responder.send(Message::Text(
             OutgoingMessage::NewGame(self.field.width(), self.field.height()).encode()
+        ));
+        client.responder.send(Message::Text(
+            OutgoingMessage::RoomCode(self.room_id).encode()
         ));
         //TODO: broadcast new client to room (if other clients are in room)
         self.clients.insert(client.id, client);
@@ -77,12 +82,6 @@ impl GameRoom {
             }
         }
     }
-
-    fn handle_message(&mut self, client_id: ClientId, message: IncomingMessage) {
-        match message {
-            IncomingMessage::Reveal(x, y) => self.reveal_square(x, y),
-        }
-    }
 }
 
 #[derive(Debug)]
@@ -110,10 +109,14 @@ impl RoomManager {
 
     pub fn add_client_to_new_room(&mut self, client: Client) {
         let roomid = self.gen_room_id();
-        let mut room = GameRoom::new(Minefield::default_field());
-        self.client_map.insert(client.id, roomid);
-        room.add_client(client);
+        let room = GameRoom::new(Minefield::default_field(), roomid);
         self.rooms.insert(roomid, room);
+        self.add_client_to_room(client, roomid);
+    }
+
+    fn add_client_to_room(&mut self, client: Client, room_id: RoomId) {
+        self.client_map.insert(client.id, room_id);
+        self.rooms.get_mut(&room_id).unwrap().add_client(client);
     }
 
     pub fn remove_client(&mut self, client_id: ClientId) -> Option<Client> {
@@ -132,7 +135,13 @@ impl RoomManager {
 
     pub fn handle_message(&mut self, client_id: ClientId, message: IncomingMessage) {
         let client_roomid = *self.client_map.get(&client_id).expect("Client is not in a room");
-        let client_room = self.rooms.get_mut(&client_roomid).expect("Invalid RoomId in client_map");
-        client_room.handle_message(client_id, message);
+        let room = self.rooms.get_mut(&client_roomid).expect("Invalid RoomId in client_map");
+        match message {
+            IncomingMessage::Reveal(x, y) => room.reveal_square(x, y),
+            IncomingMessage::JoinRoom(room_id) => {
+                let client = self.remove_client(client_id).unwrap();
+                self.add_client_to_room(client, room_id);
+            },
+        }
     }
 }
