@@ -133,8 +133,10 @@ impl RoomManager {
         let mut hasher = self.random_state.build_hasher();
         hasher.write_u32(id);
 
-        let mut s = format!("{:X}", hasher.finish())
-            .replace("0", "G")
+        let mut s = format!("{:X}", hasher.finish());
+        s.truncate(6);
+
+        s.replace("0", "G")
             .replace("1", "H")
             .replace("2", "Q")
             .replace("3", "J")
@@ -143,10 +145,7 @@ impl RoomManager {
             .replace("6", "M")
             .replace("7", "N")
             .replace("8", "O")
-            .replace("9", "P");
-        s.truncate(6);
-
-        s
+            .replace("9", "P")
     }
 
     pub fn add_client_to_new_room(&mut self, client: Client) {
