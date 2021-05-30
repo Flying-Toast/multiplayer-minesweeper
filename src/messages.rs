@@ -1,5 +1,4 @@
 use crate::game::SquareContents;
-use crate::multiplayer::RoomId;
 
 impl SquareContents {
     fn encode(&self) -> &'static str {
@@ -24,18 +23,18 @@ impl SquareContents {
 }
 
 #[derive(Debug)]
-pub enum OutgoingMessage {
+pub enum OutgoingMessage<'a> {
     /// (width, height)
     NewGame(usize, usize),
     /// Server is revealing square (x, y)
     Reveal(usize, usize, SquareContents),
     /// Tells the client their room id
-    RoomCode(RoomId),
+    RoomCode(&'a str),
     /// Another player flagged/unflagged a mine
     Flag(usize, usize, bool),
 }
 
-impl OutgoingMessage {
+impl OutgoingMessage<'_> {
     // encodes to json
     pub fn encode(&self) -> String {
         match self {
@@ -45,8 +44,8 @@ impl OutgoingMessage {
             Self::Reveal(x, y, contents) => {
                 format!(r#"{{"t":"reveal","x":{},"y":{},"content":"{}"}}"#, x, y, contents.encode())
             },
-            Self::RoomCode(roomid) => {
-                format!(r#"{{"t":"room","id":"{}"}}"#, roomid)
+            Self::RoomCode(roomcode) => {
+                format!(r#"{{"t":"room","id":"{}"}}"#, roomcode)
             },
             Self::Flag(x, y, on) => {
                 format!(r#"{{"t":"flag","x":{},"y":{},"on":{}}}"#, x, y, on)
@@ -59,7 +58,7 @@ impl OutgoingMessage {
 pub enum IncomingMessage {
     /// Client wants to reveal square (x, y)
     Reveal(usize, usize),
-    JoinRoom(RoomId),
+    JoinRoom(String),
     Flag(usize, usize, bool),
 }
 
@@ -74,9 +73,9 @@ impl IncomingMessage {
                 Some(Self::Reveal(x, y))
             },
             "join" => {
-                let room_id: RoomId = lines.next()?.parse().ok()?;
-
-                Some(Self::JoinRoom(room_id))
+                Some(Self::JoinRoom(
+                    lines.next()?.parse().ok()?,
+                ))
             },
             "flag" => {
                 Some(Self::Flag(

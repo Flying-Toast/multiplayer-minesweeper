@@ -1,4 +1,5 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, hash_map::RandomState};
+use std::hash::{BuildHasher, Hasher};
 use simple_websockets::{Responder, Message};
 use crate::game::{Minefield, SquareContents};
 use crate::messages::{OutgoingMessage, IncomingMessage};
@@ -27,15 +28,17 @@ struct GameRoom {
     field: Minefield,
     is_game_over: bool,
     room_id: RoomId,
+    room_code: String,
 }
 
 impl GameRoom {
-    fn new(field: Minefield, room_id: RoomId) -> Self {
+    fn new(field: Minefield, room_id: RoomId, room_code: String) -> Self {
         Self {
             clients: HashMap::new(),
             field,
             is_game_over: false,
             room_id,
+            room_code,
         }
     }
 
@@ -44,7 +47,7 @@ impl GameRoom {
             OutgoingMessage::NewGame(self.field.width(), self.field.height()).encode()
         ));
         client.responder.send(Message::Text(
-            OutgoingMessage::RoomCode(self.room_id).encode()
+            OutgoingMessage::RoomCode(&self.room_code).encode()
         ));
         for square in self.field.all_squares() {
             if square.revealed() {
@@ -105,6 +108,8 @@ pub struct RoomManager {
     next_room_id: RoomId,
     /// Maps a client to the room they're in
     client_map: HashMap<ClientId, RoomId>,
+    random_state: RandomState,
+    code_map: HashMap<String, RoomId>,
 }
 
 impl RoomManager {
@@ -113,6 +118,8 @@ impl RoomManager {
             rooms: HashMap::new(),
             next_room_id: 0,
             client_map: HashMap::new(),
+            random_state: RandomState::new(),
+            code_map: HashMap::new(),
         }
     }
 
@@ -122,9 +129,30 @@ impl RoomManager {
         id
     }
 
+    fn room_id_to_code(&self, id: RoomId) -> String {
+        let mut hasher = self.random_state.build_hasher();
+        hasher.write_u32(id);
+
+        let mut s = format!("{:X}", hasher.finish())
+            .replace("0", "G")
+            .replace("1", "H")
+            .replace("2", "Q")
+            .replace("3", "J")
+            .replace("4", "K")
+            .replace("5", "L")
+            .replace("6", "M")
+            .replace("7", "N")
+            .replace("8", "O")
+            .replace("9", "P");
+        s.truncate(6);
+
+        s
+    }
+
     pub fn add_client_to_new_room(&mut self, client: Client) {
         let roomid = self.gen_room_id();
-        let room = GameRoom::new(Minefield::default_field(), roomid);
+        let room = GameRoom::new(Minefield::default_field(), roomid, self.room_id_to_code(roomid));
+        self.code_map.insert(self.room_id_to_code(roomid), roomid);
         self.rooms.insert(roomid, room);
         self.add_client_to_room(client, roomid);
     }
@@ -141,6 +169,7 @@ impl RoomManager {
             let removed = room.remove_client(client_id).expect("Client was not in room given by client_map");
             if room.is_empty() {
                 self.rooms.remove(&roomid);
+                self.code_map.remove(&self.room_id_to_code(roomid));
             }
             Some(removed)
         } else {
@@ -153,10 +182,12 @@ impl RoomManager {
         let room = self.rooms.get_mut(&client_roomid).expect("Invalid RoomId in client_map");
         match message {
             IncomingMessage::Reveal(x, y) => room.reveal_square(x, y),
-            IncomingMessage::JoinRoom(room_id) => {
-                if *self.client_map.get(&client_id).unwrap() != room_id && self.rooms.contains_key(&room_id) {
-                    let client = self.remove_client(client_id).unwrap();
-                    self.add_client_to_room(client, room_id);
+            IncomingMessage::JoinRoom(room_code) => {
+                if let Some(&room_id) = self.code_map.get(&room_code) {
+                    if *self.client_map.get(&client_id).unwrap() != room_id {
+                        let client = self.remove_client(client_id).unwrap();
+                        self.add_client_to_room(client, room_id);
+                    }
                 }
             },
             IncomingMessage::Flag(x, y, on) => {

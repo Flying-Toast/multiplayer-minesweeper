@@ -180,25 +180,15 @@ function main() {
 	addEventListener("dragstart", e => e.preventDefault());
 	let roomCodeDisplay = document.querySelector("#your-room-code");
 	let roomCodeInput = document.querySelector("#room-code-input");
-	let roomCodeValid = false;
 	let roomCodeSubmit = document.querySelector("#room-code-submit");
 	roomCodeInput.addEventListener("keypress", function(e) {
 		if (e.key == "Enter") {
 			roomCodeSubmit.click();
 		}
 	});
-	roomCodeInput.addEventListener("input", function() {
-		let intified = Number(roomCodeInput.value);
-		roomCodeValid = !isNaN(intified) && intified >= 0;
-	});
 	roomCodeSubmit.addEventListener("click", function() {
-		if (roomCodeValid) {
+		if (roomCodeInput.value != "") {
 			ws.send(OutgoingMessage.JoinRoom(roomCodeInput.value));
-		} else if (roomCodeInput.value != "") {
-			roomCodeInput.style.color = "red";
-			roomCodeInput.addEventListener("input", function() {
-				roomCodeInput.style.color = "";
-			}, { once: true });
 		}
 	});
 	let boardElt = document.querySelector("#board");
