@@ -13,9 +13,14 @@
 
 		<div class="center">
 			<div id="wrapper" class="center hidden">
+				<ul>
+					<li>Maximum board area is 2500</li>
+					<li>Click "auto" to calculate ideal # of mines for given dimensions</li>
+					<li>Enter someone else's room code to join the same board as them</li>
+				</ul>
+				<hr>
 				<div id="controls-wrapper">
 					<div class="controls">
-						<div class="input-row">Maximum board area is 2500</div>
 						<div id="board-inputs">
 							<div class="input-row">
 								width: <input type="number" class="board-num-input" id="board-width">
@@ -26,12 +31,13 @@
 								<button class="button small-button" id="ideal-mines">Auto</button>
 							</div>
 						</div>
+						<hr>
 						<button id="new-game" class="button">New Game</button>
 					</div>
 					<div class="controls">
-						<div>Your room code is <span id="your-room-code">...</span></div>
 						<input id="room-code-input" type="text" autocapitalize="none" autocorrect="off" autocomplete="off" placeholder="Enter a room code">
 						<button id="room-code-submit" class="button">Join Room</button>
+						<div>Your room code is <span id="your-room-code">...</span></div>
 					</div>
 				</div>
 

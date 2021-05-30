@@ -52,13 +52,17 @@ input[type="text"], input[type="number"], input:not([type]) {
 	font-size: 2em;
 }
 
+ul {
+	text-align: left;
+	display: inline-block;
+	margin-bottom: 0px;
+}
+
 .controls {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	text-align: left;
 	display: inline-block;
-	align-self: flex-end;
-
 }
 
 #controls-wrapper {
