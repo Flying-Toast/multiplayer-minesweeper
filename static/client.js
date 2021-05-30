@@ -141,3 +141,21 @@ function main() {
 	});
 }
 addEventListener("load", main);
+function prefetchImages() {
+	const images = [
+		"1.svg",
+		"2.svg",
+		"3.svg",
+		"4.svg",
+		"5.svg",
+		"6.svg",
+		"7.svg",
+		"8.svg",
+		"flag.svg",
+		"mine.svg",
+	];
+	for (const i of images) {
+		document.createElement("img").src = i;
+	}
+}
+prefetchImages();
