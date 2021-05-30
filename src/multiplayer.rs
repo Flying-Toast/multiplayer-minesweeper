@@ -59,7 +59,7 @@ impl GameRoom {
         self.clients.is_empty()
     }
 
-    fn broadcast_message(&self, message: OutgoingMessage) {
+    pub fn broadcast_message(&self, message: OutgoingMessage) {
         for client in self.clients.values() {
             client.responder.send(Message::Text(message.encode()));
         }
@@ -139,8 +139,17 @@ impl RoomManager {
         match message {
             IncomingMessage::Reveal(x, y) => room.reveal_square(x, y),
             IncomingMessage::JoinRoom(room_id) => {
-                let client = self.remove_client(client_id).unwrap();
-                self.add_client_to_room(client, room_id);
+                if self.rooms.contains_key(&room_id) {
+                    let client = self.remove_client(client_id).unwrap();
+                    self.add_client_to_room(client, room_id);
+                }
+            },
+            IncomingMessage::Flag(x, y, on) => {
+                if x < room.field.width() && y < room.field.height() {
+                    room.broadcast_message(
+                        OutgoingMessage::Flag(x, y, on)
+                    );
+                }
             },
         }
     }

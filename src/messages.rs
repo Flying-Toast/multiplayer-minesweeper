@@ -31,6 +31,8 @@ pub enum OutgoingMessage {
     Reveal(usize, usize, SquareContents),
     /// Tells the client their room id
     RoomCode(RoomId),
+    /// Another player flagged/unflagged a mine
+    Flag(usize, usize, bool),
 }
 
 impl OutgoingMessage {
@@ -46,6 +48,9 @@ impl OutgoingMessage {
             Self::RoomCode(roomid) => {
                 format!(r#"{{"t":"room","id":"{}"}}"#, roomid)
             },
+            Self::Flag(x, y, on) => {
+                format!(r#"{{"t":"flag","x":{},"y":{},"on":{}}}"#, x, y, on)
+            },
         }
     }
 }
@@ -55,6 +60,7 @@ pub enum IncomingMessage {
     /// Client wants to reveal square (x, y)
     Reveal(usize, usize),
     JoinRoom(RoomId),
+    Flag(usize, usize, bool),
 }
 
 impl IncomingMessage {
@@ -71,6 +77,13 @@ impl IncomingMessage {
                 let room_id: RoomId = lines.next()?.parse().ok()?;
 
                 Some(Self::JoinRoom(room_id))
+            },
+            "flag" => {
+                Some(Self::Flag(
+                    lines.next()?.parse().ok()?,
+                    lines.next()?.parse().ok()?,
+                    lines.next()?.parse().ok()?,
+                ))
             },
             _ => None,
         }

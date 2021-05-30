@@ -27,13 +27,9 @@ fn main() {
                     Message::Text(s) => {
                         if let Some(msg) = IncomingMessage::parse(&s) {
                             rooms.handle_message(client_id, msg);
-                        } else {
-                            println!("Couldn't parse message from client {}:\n== start ==\n{}\n== end ==", client_id, s);
                         }
                     },
-                    Message::Binary(_) => {
-                        println!("Ignoring binary message from client {}", client_id);
-                    },
+                    Message::Binary(_) => {},
                 }
             },
         }

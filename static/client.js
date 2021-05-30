@@ -14,6 +14,9 @@ const OutgoingMessage = {
 	JoinRoom: function(id) {
 		return `join\n${id}`;
 	},
+	Flag: function(x, y, on) {
+		return `flag\n${x}\n${y}\n${on}`;
+	}
 };
 
 function eltDisplayRevealedStyle(elt) {
@@ -83,17 +86,31 @@ class Square {
 	}
 
 	toggleFlag() {
-		if (this.elt.classList.contains("revealed-square")) {
+		if (this.elt.classList.contains("revealed-square") || gameOver) {
 			return;
 		}
 
 		if (this.flagged) {
-			this.flagged = false;
-			this.clearIcon();
+			this.flagOff();
 		} else {
-			this.flagged = true;
-			this.setIcon(Icon.flag);
+			this.flagOn();
 		}
+	}
+
+	flagOn(broadcast = true) {
+		this.flagged = true;
+		if (broadcast) {
+			ws.send(OutgoingMessage.Flag(this.x, this.y, true));
+		}
+		this.setIcon(Icon.flag);
+	}
+
+	flagOff(broadcast = true) {
+		this.flagged = false;
+		if (broadcast) {
+			ws.send(OutgoingMessage.Flag(this.x, this.y, false));
+		}
+		this.clearIcon();
 	}
 
 	displayRevealedStyle() {
@@ -157,9 +174,21 @@ function main() {
 	addEventListener("dragstart", e => e.preventDefault());
 	let roomCodeDisplay = document.querySelector("#your-room-code");
 	let roomCodeInput = document.querySelector("#room-code-input");
+	let roomCodeValid = false;
+	roomCodeInput.addEventListener("input", function() {
+		let intified = Number(roomCodeInput.value);
+		roomCodeValid = !isNaN(intified) && intified >= 0;
+	});
 	let roomCodeSubmit = document.querySelector("#room-code-submit");
 	roomCodeSubmit.addEventListener("click", function() {
-		ws.send(OutgoingMessage.JoinRoom(roomCodeInput.value));
+		if (roomCodeValid) {
+			ws.send(OutgoingMessage.JoinRoom(roomCodeInput.value));
+		} else {
+			roomCodeInput.style.color = "red";
+			roomCodeInput.addEventListener("input", function() {
+				roomCodeInput.style.color = "";
+			}, { once: true });
+		}
 	});
 	let boardElt = document.querySelector("#board");
 	let field;
@@ -169,12 +198,13 @@ function main() {
 	ws.addEventListener("message", function(m) {
 		const message = JSON.parse(m.data);
 		switch (message.t) {
-			case "newgame":
+			case "newgame": {
 				field = new Minefield(boardElt, message.width, message.height);
 				gameOver = false;
 				break;
-			case "reveal":
-				const numContent = parseInt(message.content);
+			}
+			case "reveal": {
+				const numContent = Number(message.content);
 				let square = field.getSquare(message.x, message.y);
 
 				if (!isNaN(numContent) && numContent > 0 && numContent < 9) {
@@ -187,10 +217,21 @@ function main() {
 					gameOver = true;
 				}
 				break;
-			case "room":
+			}
+			case "room": {
 				roomId = message.id;
 				roomCodeDisplay.innerText = roomId;
 				break;
+			}
+			case "flag": {
+				let square = field.getSquare(message.x, message.y);
+				if (message.on) {
+					square.flagOn(false);
+				} else {
+					square.flagOff(false);
+				}
+				break;
+			}
 			default:
 				console.log("Unhandled message:", message);
 		}
