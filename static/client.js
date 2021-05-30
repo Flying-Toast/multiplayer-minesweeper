@@ -1,6 +1,12 @@
 let ws = null;
 let gameOver = false;
 
+function onConnectionError() {
+	setTimeout(function() {
+		document.querySelector("#connection-error").style.display = "block";
+	}, 500);
+}
+
 const Icon = {
 	// num[0] is meaningless, zero-index is just used as padding so that num[1] is icon "1"
 	num: Array.from(Array(9).keys()).map(String),
@@ -188,7 +194,7 @@ function main() {
 	roomCodeSubmit.addEventListener("click", function() {
 		if (roomCodeValid) {
 			ws.send(OutgoingMessage.JoinRoom(roomCodeInput.value));
-		} else {
+		} else if (roomCodeInput.value != "") {
 			roomCodeInput.style.color = "red";
 			roomCodeInput.addEventListener("input", function() {
 				roomCodeInput.style.color = "";
@@ -199,11 +205,15 @@ function main() {
 	let field;
 	let roomId = null;
 	ws = new WebSocket(`ws://${location.hostname}:12345`);
+	ws.addEventListener("close", onConnectionError);
+	ws.addEventListener("error", onConnectionError);
 
 	ws.addEventListener("message", function(m) {
 		const message = JSON.parse(m.data);
 		switch (message.t) {
 			case "newgame": {
+				document.querySelector("#loader").style.display = "none";
+				document.querySelector("#wrapper").style.display = "block";
 				field = new Minefield(boardElt, message.width, message.height);
 				gameOver = false;
 				break;
@@ -241,12 +251,9 @@ function main() {
 				console.log("Unhandled message:", message);
 		}
 	});
-
-	ws.addEventListener("close", function() {
-		console.log("Websocket closed");
-	});
 }
 addEventListener("load", main);
+
 function prefetchImages() {
 	const images = [
 		"1.svg",

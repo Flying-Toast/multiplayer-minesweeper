@@ -8,11 +8,18 @@
 	</head>
 
 	<body>
-		<div>You are in room <span id="your-room-code"></span></div>
-		<input id="room-code-input" type="text" placeholder="enter a room number">
-		<button id="room-code-submit">Go</button>
-		<br>
-		<div id="board"></div>
+		<div id="loader">LOADING</div>
+		<div id="connection-error">Could not connect to server</div>
+
+		<div id="wrapper" class="center">
+			<div id="room-controls">
+				<div>Your room code is <span id="your-room-code">...</span></div>
+				<input id="room-code-input" type="text" placeholder="Enter a room code">
+				<button id="room-code-submit" class="button">Join Room</button>
+			</div>
+
+			<div id="board"></div>
+		</div>
 
 		<script src="/client.js"></script>
 	</body>

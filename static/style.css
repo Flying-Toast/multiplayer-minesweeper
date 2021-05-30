@@ -1,5 +1,53 @@
 *, *::before, *::after {
 	box-sizing: border-box;
+	font-family: sans-serif;
+}
+
+.center {
+	text-align: center;
+}
+
+.button {
+	cursor: pointer;
+	background-color: #1166D0;
+	border: none;
+	border-radius: 4px;
+	color: white;
+	padding: 7px 30px;
+}
+
+input[type="text"] {
+	background-color: #E0E0E0;
+	border: 1px solid #747474;
+	border-radius: 2px;
+	padding: 6px 2px;
+}
+
+input[type="text"]:focus {
+	outline: none;
+}
+
+#loader {
+	text-align: center;
+	font-size: 3em;
+	margin-top: 100px;
+	text-decoration: underline;
+}
+
+#connection-error {
+	text-align: center;
+	font-size: 2em;
+	display: none;
+}
+
+#wrapper {
+	display: none;
+}
+
+#room-controls {
+	margin-bottom: 5px;
+	text-align: left;
+	display: inline-block;
 }
 
 #board {
