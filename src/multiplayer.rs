@@ -154,7 +154,7 @@ impl RoomManager {
         match message {
             IncomingMessage::Reveal(x, y) => room.reveal_square(x, y),
             IncomingMessage::JoinRoom(room_id) => {
-                if self.rooms.contains_key(&room_id) {
+                if *self.client_map.get(&client_id).unwrap() != room_id && self.rooms.contains_key(&room_id) {
                     let client = self.remove_client(client_id).unwrap();
                     self.add_client_to_room(client, room_id);
                 }

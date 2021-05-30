@@ -175,11 +175,16 @@ function main() {
 	let roomCodeDisplay = document.querySelector("#your-room-code");
 	let roomCodeInput = document.querySelector("#room-code-input");
 	let roomCodeValid = false;
+	let roomCodeSubmit = document.querySelector("#room-code-submit");
+	roomCodeInput.addEventListener("keypress", function(e) {
+		if (e.key == "Enter") {
+			roomCodeSubmit.click();
+		}
+	});
 	roomCodeInput.addEventListener("input", function() {
 		let intified = Number(roomCodeInput.value);
 		roomCodeValid = !isNaN(intified) && intified >= 0;
 	});
-	let roomCodeSubmit = document.querySelector("#room-code-submit");
 	roomCodeSubmit.addEventListener("click", function() {
 		if (roomCodeValid) {
 			ws.send(OutgoingMessage.JoinRoom(roomCodeInput.value));
