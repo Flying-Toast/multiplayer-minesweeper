@@ -3,6 +3,11 @@
 	font-family: sans-serif;
 }
 
+body {
+	margin: 0px;
+	background-color: #C1C1C1;
+}
+
 .center {
 	text-align: center;
 }
@@ -45,15 +50,34 @@ input[type="text"]:focus {
 }
 
 #room-controls {
+	margin-top: 5px;
 	margin-bottom: 5px;
 	text-align: left;
 	display: inline-block;
+}
+
+#your-room-code {
+	font-weight: bold;
 }
 
 #board {
 	line-height: 0;
 	display: inline-block;
 	white-space: nowrap;
+	border-left: 4px solid #7B7B7B;
+	border-top: 4px solid #7B7B7B;
+	border-right: 4px solid white;
+	border-bottom: 4px solid white;
+}
+
+#board-wrapper {
+	background-color: #BDBDBD;
+	border-right: 4px solid #7B7B7B;
+	border-bottom: 4px solid #7B7B7B;
+	border-left: 4px solid white;
+	border-top: 4px solid white;
+	display: inline-block;
+	padding: 10px;
 }
 
 .square {

@@ -12,13 +12,17 @@
 		<div id="connection-error">Could not connect to server</div>
 
 		<div id="wrapper" class="center">
-			<div id="room-controls">
-				<div>Your room code is <span id="your-room-code">...</span></div>
-				<input id="room-code-input" type="text" placeholder="Enter a room code">
-				<button id="room-code-submit" class="button">Join Room</button>
+			<div>
+				<div id="room-controls">
+					<div>Your room code is <span id="your-room-code">...</span></div>
+					<input id="room-code-input" type="text" placeholder="Enter a room code">
+					<button id="room-code-submit" class="button">Join Room</button>
+				</div>
 			</div>
 
-			<div id="board"></div>
+			<div id="board-wrapper">
+				<div id="board"></div>
+			</div>
 		</div>
 
 		<script src="/client.js"></script>
