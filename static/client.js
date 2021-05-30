@@ -80,6 +80,10 @@ class Square {
 	}
 
 	toggleFlag() {
+		if (this.elt.classList.contains("revealed-square")) {
+			return;
+		}
+
 		if (this.flagged) {
 			this.flagged = false;
 			this.clearIcon();
