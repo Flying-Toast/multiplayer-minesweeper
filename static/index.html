@@ -16,10 +16,15 @@
 				<div id="controls-wrapper">
 					<div class="controls">
 						<div class="input-row">Maximum board area is 2500</div>
-						<div class="input-row" id="board-inputs">
-							width: <input type="number" class="board-num-input" id="board-width">
-							height: <input type="number" class="board-num-input" id="board-height">
-							mines: <input type="number" class="board-num-input" id="num-mines">
+						<div id="board-inputs">
+							<div class="input-row">
+								width: <input type="number" class="board-num-input" id="board-width">
+								height: <input type="number" class="board-num-input" id="board-height">
+							</div>
+							<div class="input-row">
+								mines: <input type="number" class="board-num-input" id="num-mines">
+								<button class="button small-button" id="ideal-mines">Auto</button>
+							</div>
 						</div>
 						<button id="new-game" class="button">New Game</button>
 					</div>

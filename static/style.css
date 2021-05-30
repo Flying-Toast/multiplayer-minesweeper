@@ -25,6 +25,10 @@ body {
 	padding: 7px 30px;
 }
 
+.small-button {
+	padding: 3px 5px;
+}
+
 input[type="text"], input[type="number"], input:not([type]) {
 	background-color: #E0E0E0;
 	border: 1px solid #747474;

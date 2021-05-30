@@ -179,6 +179,16 @@ class Minefield {
 	}
 }
 
+function idealMineCount(area) {
+	if (area == 30 * 16) {
+		return 99;
+	} else {
+		return Math.round(
+			(0.0002 * area * area) + (0.0938 * area) + 0.8937
+		);
+	}
+}
+
 function main() {
 	addEventListener("dragstart", e => e.preventDefault());
 	let roomCodeDisplay = document.querySelector("#your-room-code");
@@ -207,6 +217,14 @@ function main() {
 		let numMines = Number(numMinesInput.value);
 		if (!isNaN(width) && !isNaN(height) && !isNaN(numMines)) {
 			ws.send(OutgoingMessage.NewGame(width, height, numMines));
+		}
+	});
+	document.querySelector("#ideal-mines").addEventListener("click", function() {
+		let width = Number(boardWidthInput.value);
+		let height = Number(boardHeightInput.value);
+		let area = width * height;
+		if (!isNaN(width) && !isNaN(height)) {
+			numMinesInput.value = idealMineCount(area);
 		}
 	});
 	let boardElt = document.querySelector("#board");
