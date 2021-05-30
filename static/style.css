@@ -8,6 +8,10 @@ body {
 	background-color: #BDBDBD;
 }
 
+.hidden {
+	display: none;
+}
+
 .center {
 	text-align: center;
 }
@@ -21,14 +25,14 @@ body {
 	padding: 7px 30px;
 }
 
-input[type="text"] {
+input[type="text"], input[type="number"], input:not([type]) {
 	background-color: #E0E0E0;
 	border: 1px solid #747474;
 	border-radius: 2px;
 	padding: 6px 2px;
 }
 
-input[type="text"]:focus {
+input:focus {
 	outline: none;
 }
 
@@ -42,14 +46,9 @@ input[type="text"]:focus {
 #connection-error {
 	text-align: center;
 	font-size: 2em;
-	display: none;
 }
 
-#wrapper {
-	display: none;
-}
-
-#room-controls {
+.controls {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	text-align: left;

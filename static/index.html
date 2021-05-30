@@ -9,14 +9,18 @@
 
 	<body>
 		<div id="loader">LOADING</div>
-		<div id="connection-error">Could not connect to server</div>
+		<div id="connection-error" class="hidden">Could not connect to server</div>
 
-		<div id="wrapper" class="center">
+		<div id="wrapper" class="center hidden">
 			<div>
-				<div id="room-controls">
+				<div class="controls">
 					<div>Your room code is <span id="your-room-code">...</span></div>
 					<input id="room-code-input" type="text" autocapitalize="none" autocorrect="off" autocomplete="off" placeholder="Enter a room code">
 					<button id="room-code-submit" class="button">Join Room</button>
+				</div>
+				<div class="controls">
+					<input>
+					<button id="new-game" class="button">New Game</button>
 				</div>
 			</div>
 

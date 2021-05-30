@@ -3,7 +3,7 @@ let gameOver = false;
 
 function onConnectionError() {
 	setTimeout(function() {
-		document.querySelector("#connection-error").style.display = "block";
+		document.querySelector("#connection-error").classList.remove("hidden");
 	}, 500);
 }
 
@@ -202,8 +202,8 @@ function main() {
 		const message = JSON.parse(m.data);
 		switch (message.t) {
 			case "newgame": {
-				document.querySelector("#loader").style.display = "none";
-				document.querySelector("#wrapper").style.display = "block";
+				document.querySelector("#loader").classList.add("hidden");
+				document.querySelector("#wrapper").classList.remove("hidden");
 				field = new Minefield(boardElt, message.width, message.height);
 				gameOver = false;
 				break;
