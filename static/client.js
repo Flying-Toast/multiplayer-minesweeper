@@ -224,6 +224,7 @@ function main() {
 				break;
 			}
 			case "room": {
+				roomCodeInput.value = "";
 				roomId = message.id;
 				roomCodeDisplay.innerText = roomId;
 				break;

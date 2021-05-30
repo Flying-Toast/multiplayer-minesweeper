@@ -183,6 +183,7 @@ impl RoomManager {
         match message {
             IncomingMessage::Reveal(x, y) => room.reveal_square(x, y),
             IncomingMessage::JoinRoom(room_code) => {
+                let room_code = room_code.to_uppercase();
                 if let Some(&room_id) = self.code_map.get(&room_code) {
                     if *self.client_map.get(&client_id).unwrap() != room_id {
                         let client = self.remove_client(client_id).unwrap();
