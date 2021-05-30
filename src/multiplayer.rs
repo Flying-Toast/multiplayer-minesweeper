@@ -46,13 +46,28 @@ impl GameRoom {
         client.responder.send(Message::Text(
             OutgoingMessage::RoomCode(self.room_id).encode()
         ));
-        //TODO: broadcast new client to room (if other clients are in room)
+        for square in self.field.all_squares() {
+            if square.revealed() {
+                let num_mines = self.field.square_neighbors(square.x(), square.y())
+                    .iter()
+                    .filter(|(_, _, is_mine)| *is_mine)
+                    .count() as u8;
+                client.responder.send(Message::Text(
+                    OutgoingMessage::Reveal(square.x(), square.y(), SquareContents::NumMines(num_mines)).encode()
+                ));
+            }
+
+            if square.flagged() {
+                client.responder.send(Message::Text(
+                    OutgoingMessage::Flag(square.x(), square.y(), true).encode()
+                ));
+            }
+        }
         self.clients.insert(client.id, client);
     }
 
     fn remove_client(&mut self, client_id: ClientId) -> Option<Client> {
         self.clients.remove(&client_id)
-        //TODO: broadcast removal
     }
 
     fn is_empty(&self) -> bool {
@@ -146,6 +161,7 @@ impl RoomManager {
             },
             IncomingMessage::Flag(x, y, on) => {
                 if x < room.field.width() && y < room.field.height() {
+                    room.field.get_square_mut(x, y).unwrap().set_flagged(on);
                     room.broadcast_message(
                         OutgoingMessage::Flag(x, y, on)
                     );

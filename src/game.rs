@@ -5,6 +5,7 @@ use std::collections::HashSet;
 pub struct Square {
     is_mine: bool,
     revealed: bool,
+    flagged: bool,
     x: usize,
     y: usize,
 }
@@ -14,9 +15,30 @@ impl Square {
         Self {
             is_mine,
             revealed: false,
+            flagged: false,
             x,
             y,
         }
+    }
+
+    pub fn x(&self) -> usize {
+        self.x
+    }
+
+    pub fn y(&self) -> usize {
+        self.y
+    }
+
+    pub fn set_flagged(&mut self, on: bool) {
+        self.flagged = on;
+    }
+
+    pub fn flagged(&self) -> bool {
+        self.flagged
+    }
+
+    pub fn revealed(&self) -> bool {
+        self.revealed
     }
 }
 
@@ -84,6 +106,10 @@ impl Minefield {
         self.height
     }
 
+    pub fn all_squares(&self) -> impl Iterator<Item=&Square> {
+        self.squares.iter().flatten()
+    }
+
     /// Returns `None` if invalid coords
     pub fn get_square(&self, x: usize, y: usize) -> Option<&Square> {
         return self.squares.get(y)?.get(x)
@@ -94,7 +120,7 @@ impl Minefield {
         return self.squares.get_mut(y)?.get_mut(x)
     }
 
-    fn square_neighbors(&self, x: usize, y: usize) -> Vec<(usize, usize, bool)> {
+    pub fn square_neighbors(&self, x: usize, y: usize) -> Vec<(usize, usize, bool)> {
         // yuck this isn't pretty
         let neighbor_positions = [
             if x > 0 && y > 0 { self.get_square(x - 1, y - 1) } else { None },
@@ -158,8 +184,6 @@ impl Minefield {
 
     /// Returns `None` if invalid coords
     pub fn recursive_square_reveal(&mut self, x: usize, y: usize) -> Option<Vec<(usize, usize, SquareContents)>> {
-        //TODO: prevent possible DOS by stack overflow if client makes huge field with few mines
-        // set a limit on field size to also prevent DOS by allocating tons of memory
         if self.is_first_move {
             self.protect_square(x, y);
             self.is_first_move = false;
