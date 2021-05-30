@@ -120,7 +120,7 @@ class Square {
 		if (gameOver) {
 			return;
 		}
-		console.log("REVEALING")
+
 		if (!this.flagged) {
 			ws.send(OutgoingMessage.Reveal(this.x, this.y));
 		}
