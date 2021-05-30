@@ -36,6 +36,10 @@ input:focus {
 	outline: none;
 }
 
+#wrapper {
+	display: inline-block;
+}
+
 #loader {
 	text-align: center;
 	font-size: 3em;
@@ -53,6 +57,13 @@ input:focus {
 	margin-bottom: 5px;
 	text-align: left;
 	display: inline-block;
+	align-self: flex-end;
+
+}
+
+#controls-wrapper {
+	display: flex;
+	justify-content: space-between;
 }
 
 #your-room-code {
