@@ -55,13 +55,16 @@ pub struct Minefield {
     width: usize,
     height: usize,
     is_first_move: bool,
+    num_mines: usize,
 }
+
+const MAX_BOARD_AREA: usize = 50 * 50;
 
 impl Minefield {
     /// Creates a randomized minefield
-    fn new(width: usize, height: usize, num_mines: usize) -> Option<Self> {
+    pub fn new(width: usize, height: usize, num_mines: usize) -> Option<Self> {
         let area = width * height;
-        if num_mines > area || width == 0 || height == 0 {
+        if num_mines > area || width == 0 || height == 0 || area > MAX_BOARD_AREA {
             return None;
         }
 
@@ -91,11 +94,16 @@ impl Minefield {
             height,
             squares,
             is_first_move: true,
+            num_mines,
         })
     }
 
     pub fn default_field() -> Self {
         Self::new(30, 16, 99).unwrap()
+    }
+
+    pub fn num_mines(&self) -> usize {
+        self.num_mines
     }
 
     pub fn width(&self) -> usize {

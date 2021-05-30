@@ -24,22 +24,23 @@ impl SquareContents {
 
 #[derive(Debug)]
 pub enum OutgoingMessage<'a> {
-    /// (width, height)
-    NewGame(usize, usize),
+    /// (width, height, num_mines)
+    NewGame(usize, usize, usize),
     /// Server is revealing square (x, y)
     Reveal(usize, usize, SquareContents),
     /// Tells the client their room id
     RoomCode(&'a str),
     /// Another player flagged/unflagged a mine
     Flag(usize, usize, bool),
+    BadBoardParams,
 }
 
 impl OutgoingMessage<'_> {
     // encodes to json
     pub fn encode(&self) -> String {
         match self {
-            Self::NewGame(width, height) => {
-                format!(r#"{{"t":"newgame","width":{},"height":{}}}"#, width, height)
+            Self::NewGame(width, height, mines) => {
+                format!(r#"{{"t":"newgame","width":{},"height":{},"mines":{}}}"#, width, height, mines)
             },
             Self::Reveal(x, y, contents) => {
                 format!(r#"{{"t":"reveal","x":{},"y":{},"content":"{}"}}"#, x, y, contents.encode())
@@ -49,6 +50,9 @@ impl OutgoingMessage<'_> {
             },
             Self::Flag(x, y, on) => {
                 format!(r#"{{"t":"flag","x":{},"y":{},"on":{}}}"#, x, y, on)
+            },
+            Self::BadBoardParams => {
+                format!(r#"{{"t":"badboard"}}"#)
             },
         }
     }
@@ -60,6 +64,8 @@ pub enum IncomingMessage {
     Reveal(usize, usize),
     JoinRoom(String),
     Flag(usize, usize, bool),
+    /// Client wants to start a new game
+    NewGame(usize, usize, usize),
 }
 
 impl IncomingMessage {
@@ -79,6 +85,13 @@ impl IncomingMessage {
             },
             "flag" => {
                 Some(Self::Flag(
+                    lines.next()?.parse().ok()?,
+                    lines.next()?.parse().ok()?,
+                    lines.next()?.parse().ok()?,
+                ))
+            },
+            "newgame" => {
+                Some(Self::NewGame(
                     lines.next()?.parse().ok()?,
                     lines.next()?.parse().ok()?,
                     lines.next()?.parse().ok()?,

@@ -44,7 +44,7 @@ impl GameRoom {
 
     fn add_client(&mut self, client: Client) {
         client.responder.send(Message::Text(
-            OutgoingMessage::NewGame(self.field.width(), self.field.height()).encode()
+            OutgoingMessage::NewGame(self.field.width(), self.field.height(), self.field.num_mines()).encode()
         ));
         client.responder.send(Message::Text(
             OutgoingMessage::RoomCode(&self.room_code).encode()
@@ -196,6 +196,20 @@ impl RoomManager {
                     room.broadcast_message(
                         OutgoingMessage::Flag(x, y, on)
                     );
+                }
+            },
+            IncomingMessage::NewGame(width, height, num_mines) => {
+                if let Some(field) = Minefield::new(width, height, num_mines) {
+                    room.field = field;
+                    room.is_game_over = false;
+                    room.broadcast_message(
+                        OutgoingMessage::NewGame(width, height, num_mines)
+                    );
+                } else {
+                    room.clients.get_mut(&client_id).unwrap().responder
+                        .send(Message::Text(
+                            OutgoingMessage::BadBoardParams.encode()
+                        ));
                 }
             },
         }

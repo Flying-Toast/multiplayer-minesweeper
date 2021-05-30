@@ -22,6 +22,9 @@ const OutgoingMessage = {
 	},
 	Flag: function(x, y, on) {
 		return `flag\n${x}\n${y}\n${on}`;
+	},
+	NewGame: function(width, height, num_mines) {
+		return `newgame\n${width}\n${height}\n${num_mines}`;
 	}
 };
 
@@ -191,6 +194,20 @@ function main() {
 			ws.send(OutgoingMessage.JoinRoom(roomCodeInput.value));
 		}
 	});
+	let boardWidthInput = document.querySelector("#board-width");
+	let boardHeightInput = document.querySelector("#board-height");
+	let boardInputsElt = document.querySelector("#board-inputs");
+	let numMinesInput = document.querySelector("#num-mines");
+	let newGameButton = document.querySelector("#new-game");
+	newGameButton.addEventListener("click", function() {
+		boardInputsElt.classList.remove("bad-board-input");
+		let width = Number(boardWidthInput.value);
+		let height = Number(boardHeightInput.value);
+		let numMines = Number(numMinesInput.value);
+		if (!isNaN(width) && !isNaN(height) && !isNaN(numMines)) {
+			ws.send(OutgoingMessage.NewGame(width, height, numMines));
+		}
+	});
 	let boardElt = document.querySelector("#board");
 	let field;
 	let roomId = null;
@@ -205,6 +222,9 @@ function main() {
 				document.querySelector("#loader").classList.add("hidden");
 				document.querySelector("#wrapper").classList.remove("hidden");
 				field = new Minefield(boardElt, message.width, message.height);
+				boardWidthInput.value = message.width;
+				boardHeightInput.value = message.height;
+				numMinesInput.value = message.mines;
 				gameOver = false;
 				break;
 			}
@@ -236,6 +256,10 @@ function main() {
 				} else {
 					square.flagOff(false);
 				}
+				break;
+			}
+			case "badboard": {
+				boardInputsElt.classList.add("bad-board-input");
 				break;
 			}
 			default:

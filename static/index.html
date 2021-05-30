@@ -15,13 +15,18 @@
 			<div id="wrapper" class="center hidden">
 				<div id="controls-wrapper">
 					<div class="controls">
+						<div class="input-row">Maximum board area is 2500</div>
+						<div class="input-row" id="board-inputs">
+							width: <input type="number" class="board-num-input" id="board-width">
+							height: <input type="number" class="board-num-input" id="board-height">
+							mines: <input type="number" class="board-num-input" id="num-mines">
+						</div>
+						<button id="new-game" class="button">New Game</button>
+					</div>
+					<div class="controls">
 						<div>Your room code is <span id="your-room-code">...</span></div>
 						<input id="room-code-input" type="text" autocapitalize="none" autocorrect="off" autocomplete="off" placeholder="Enter a room code">
 						<button id="room-code-submit" class="button">Join Room</button>
-					</div>
-					<div class="controls">
-						<input>
-						<button id="new-game" class="button">New Game</button>
 					</div>
 				</div>
 

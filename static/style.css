@@ -64,10 +64,24 @@ input:focus {
 #controls-wrapper {
 	display: flex;
 	justify-content: space-between;
+	min-width: 800px;
 }
 
 #your-room-code {
 	font-weight: bold;
+}
+
+.board-num-input {
+	appearance: textfield;
+	width: 3em;
+}
+
+.bad-board-input {
+	outline: 3px solid red;
+}
+
+.input-row {
+	margin-bottom: 2px;
 }
 
 #board {
