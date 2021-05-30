@@ -190,6 +190,7 @@ function main() {
 		}
 	});
 	roomCodeSubmit.addEventListener("click", function() {
+		roomCodeInput.classList.remove("bad-input");
 		if (roomCodeInput.value != "") {
 			ws.send(OutgoingMessage.JoinRoom(roomCodeInput.value));
 		}
@@ -200,7 +201,7 @@ function main() {
 	let numMinesInput = document.querySelector("#num-mines");
 	let newGameButton = document.querySelector("#new-game");
 	newGameButton.addEventListener("click", function() {
-		boardInputsElt.classList.remove("bad-board-input");
+		boardInputsElt.classList.remove("bad-input");
 		let width = Number(boardWidthInput.value);
 		let height = Number(boardHeightInput.value);
 		let numMines = Number(numMinesInput.value);
@@ -259,7 +260,11 @@ function main() {
 				break;
 			}
 			case "badboard": {
-				boardInputsElt.classList.add("bad-board-input");
+				boardInputsElt.classList.add("bad-input");
+				break;
+			}
+			case "badcode": {
+				roomCodeInput.classList.add("bad-input");
 				break;
 			}
 			default:

@@ -188,6 +188,11 @@ impl RoomManager {
                         let client = self.remove_client(client_id).unwrap();
                         self.add_client_to_room(client, room_id);
                     }
+                } else {
+                    room.clients.get_mut(&client_id).unwrap().responder
+                        .send(Message::Text(
+                            OutgoingMessage::BadRoomCode.encode()
+                        ));
                 }
             },
             IncomingMessage::Flag(x, y, on) => {

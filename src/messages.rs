@@ -33,6 +33,7 @@ pub enum OutgoingMessage<'a> {
     /// Another player flagged/unflagged a mine
     Flag(usize, usize, bool),
     BadBoardParams,
+    BadRoomCode,
 }
 
 impl OutgoingMessage<'_> {
@@ -53,6 +54,9 @@ impl OutgoingMessage<'_> {
             },
             Self::BadBoardParams => {
                 format!(r#"{{"t":"badboard"}}"#)
+            },
+            Self::BadRoomCode => {
+                format!(r#"{{"t":"badcode"}}"#)
             },
         }
     }
