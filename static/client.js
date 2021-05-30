@@ -27,14 +27,24 @@ class Square {
 	constructor(x, y) {
 		this.x = x;
 		this.y = y;
+		this.flagged = false;
 		let elt = document.createElement("span");
 		elt.classList.add("square");
 		elt.classList.add("hidden-square");
-		elt.addEventListener("click", function() {
-			ws.send(OutgoingMessage.Reveal(x, y));
-		});
-		elt.addEventListener("mousedown", function() {
-			if (gameOver) {
+		elt.addEventListener("click", function(e) {
+			if (e.ctrlKey) {
+				this.toggleFlag();
+				return;
+			}
+
+			if (e.button != 0) {
+				return;
+			}
+
+			this.reveal();
+		}.bind(this));
+		elt.addEventListener("mousedown", function(e) {
+			if (gameOver || e.button != 0 || this.flagged || e.ctrlKey) {
 				return;
 			}
 
@@ -53,13 +63,30 @@ class Square {
 			};
 			addEventListener("mousemove", mousemoveHandler);
 			addEventListener("mouseup", function(e) {
+				if (e.button != 0 || e.ctrlKey) {
+					return;
+				}
 				removeEventListener("mousemove", mousemoveHandler);
 				if (e.target.classList.contains("square")) {
 					e.target.click();
 				}
 			});
-		});
+		}.bind(this));
+		elt.addEventListener("contextmenu", function(e) {
+			e.preventDefault();
+			this.toggleFlag();
+		}.bind(this));
 		this.elt = elt;
+	}
+
+	toggleFlag() {
+		if (this.flagged) {
+			this.flagged = false;
+			this.clearIcon();
+		} else {
+			this.flagged = true;
+			this.setIcon(Icon.flag);
+		}
 	}
 
 	displayRevealedStyle() {
@@ -79,6 +106,20 @@ class Square {
 	// `setIcon(Icon.num[1])` (displays a "1")
 	setIcon(iconName) {
 		this.elt.style.backgroundImage = `url("/${iconName}.svg")`;
+	}
+
+	clearIcon() {
+		this.elt.style.backgroundImage = "";
+	}
+
+	reveal() {
+		if (gameOver) {
+			return;
+		}
+		console.log("REVEALING")
+		if (!this.flagged) {
+			ws.send(OutgoingMessage.Reveal(this.x, this.y));
+		}
 	}
 }
 
@@ -116,6 +157,7 @@ function main() {
 		switch (message.t) {
 			case "newgame":
 				field = new Minefield(boardElt, message.width, message.height);
+				gameOver = false;
 				break;
 			case "reveal":
 				const numContent = parseInt(message.content);
