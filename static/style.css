@@ -52,16 +52,24 @@ input[type="text"], input[type="number"], input:not([type]) {
 	font-size: 2em;
 }
 
-ul {
+.left-align {
 	text-align: left;
+}
+
+.board-input-label {
 	display: inline-block;
-	margin-bottom: 0px;
+	width: 60px;
+}
+
+#new-game {
+	width: 100%;
 }
 
 .controls {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	text-align: left;
+	align-self: end;
 	display: inline-block;
 }
 
