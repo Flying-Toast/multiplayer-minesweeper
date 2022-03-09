@@ -230,7 +230,7 @@ function main() {
 	let boardElt = document.querySelector("#board");
 	let field;
 	let roomId = null;
-	ws = new WebSocket(`ws://${location.hostname}:12345`);
+	ws = new WebSocket(`ws://ws.${location.hostname}:12345`);
 	ws.addEventListener("close", onConnectionError);
 	ws.addEventListener("error", onConnectionError);
 
