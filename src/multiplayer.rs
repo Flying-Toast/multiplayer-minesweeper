@@ -27,17 +27,15 @@ struct GameRoom {
     clients: HashMap<ClientId, Client>,
     field: Minefield,
     is_game_over: bool,
-    room_id: RoomId,
     room_code: String,
 }
 
 impl GameRoom {
-    fn new(field: Minefield, room_id: RoomId, room_code: String) -> Self {
+    fn new(field: Minefield, room_code: String) -> Self {
         Self {
             clients: HashMap::new(),
             field,
             is_game_over: false,
-            room_id,
             room_code,
         }
     }
@@ -150,7 +148,7 @@ impl RoomManager {
 
     pub fn add_client_to_new_room(&mut self, client: Client) {
         let roomid = self.gen_room_id();
-        let room = GameRoom::new(Minefield::default_field(), roomid, self.room_id_to_code(roomid));
+        let room = GameRoom::new(Minefield::default_field(), self.room_id_to_code(roomid));
         self.code_map.insert(self.room_id_to_code(roomid), roomid);
         self.rooms.insert(roomid, room);
         self.add_client_to_room(client, roomid);
