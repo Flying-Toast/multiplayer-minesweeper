@@ -2,7 +2,7 @@
 name = "multiplayer-minesweeper"
 version = "0.1.0"
 authors = ["Flying-Toast"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 simple-websockets = { git = "https://github.com/Flying-Toast/simple-websockets" }
