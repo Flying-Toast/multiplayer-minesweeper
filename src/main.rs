@@ -6,7 +6,7 @@ use simple_websockets::{Event, Message};
 use multiplayer::{RoomManager, Client};
 use messages::{IncomingMessage};
 
-const PORT: u16 = 12345;
+const PORT: u16 = 41435;
 
 fn main() {
     let hub = simple_websockets::launch(PORT).expect("Failed to start websocket server");
