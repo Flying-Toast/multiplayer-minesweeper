@@ -231,7 +231,7 @@ function main() {
 	let field;
 	let roomId = null;
 	try {
-		ws = new WebSocket(`ws://ws.${location.hostname}:12345`);
+		ws = new WebSocket(`wss://wsp.wiziz.io:12345`);
 	} catch (e) {
 		onConnectionError();
 	}
