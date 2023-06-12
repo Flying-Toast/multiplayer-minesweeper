@@ -5,5 +5,5 @@ authors = ["Flying-Toast"]
 edition = "2021"
 
 [dependencies]
-simple-websockets = { git = "https://github.com/Flying-Toast/simple-websockets" }
+simple-websockets = "0.1"
 rand = "0.8"
